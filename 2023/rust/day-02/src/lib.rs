@@ -66,15 +66,12 @@ pub fn process_part1(input: &str) -> String {
     });
 
     let res = games
-        .map(|game| {
-            if game.bags.iter().all(|bag| bag <= &base_bag) {
-                Some(game.game_id)
-            } else {
-                None
-            }
+        .filter_map(|game| {
+            game.bags
+                .iter()
+                .all(|bag| bag <= &base_bag)
+                .then(|| game.game_id)
         })
-        .filter(|x| x.is_some())
-        .map(|x| x.unwrap())
         .sum::<u32>();
 
     res.to_string()
@@ -114,15 +111,15 @@ pub fn process_part2(input: &str) -> String {
             })
             .collect::<Vec<_>>();
 
-        (game_id, bags)
+        Game { game_id, bags }
     });
 
     let res = games
-        .map(|(_, bags)| {
+        .map(|game| {
             let mut max_blue = 0;
             let mut max_green = 0;
             let mut max_red = 0;
-            bags.iter().for_each(|bag| {
+            game.bags.iter().for_each(|bag| {
                 if bag.blue > max_blue {
                     max_blue = bag.blue;
                 }
